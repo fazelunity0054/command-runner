@@ -2,7 +2,14 @@ const {exec} = require('child_process')
 const http = require('http');
 const PORT = 9940;
 require('dotenv').config()
-
+console.log('Starting directory: ' + process.cwd());
+try {
+    process.chdir(process.env.DIR);
+    console.log('New directory: ' + process.cwd());
+}
+catch (err) {
+    console.log('chdir: ' + err);
+}
 const Commands = process.env?.COMMANDS?.split("&&&") ?? ['echo SET COMMANDS on .env file!']
 
 function executeCommand(command, options = {}) {
