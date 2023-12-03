@@ -1,4 +1,5 @@
-const {exec} = require('child_process')
+const util = require('util');
+const exec = util.promisify(require('child_process').exec);
 const http = require('http');
 const PORT = 9940;
 require('dotenv').config()
@@ -12,39 +13,41 @@ catch (err) {
 }
 const Commands = process.env?.COMMANDS?.split("&&&") ?? ['echo SET COMMANDS on .env file!']
 
-function executeCommand(command, options = {}) {
-    return new Promise((resolve, reject) => {
-        exec(command, function (err, stdout, stderr) {
-            if (err) {
-                console.log(err)
-                reject(err);
-            }
-            console.log(stdout);
-        }).on('exit', ()=>{
-            resolve(true);
-        })
-    });
+async function executeCommand(command) {
+    try {
+        const { stdout, stderr } = await exec(command);
+        if (stdout) {
+            console.log('Command Output (stdout):', stdout);
+        }
+        if (stderr) {
+            console.log('Command Output (stderr):', stderr);
+        }
+        return { stdout, stderr };
+    } catch (error) {
+        console.log(error);
+        throw error;
+    }
 }
 
 
 http.createServer(async function (req, res) {
     let output = "";
-    let pre = console.log;
-    console.log = (str)=>{
-        output += str+"\n";
+    const pre = console.log;
+    console.log = (...str) => {
+        output += str.join(" ") + "\n";
+    };
+
+    for (const cmd of Commands) {
+        console.log('this$: ' + cmd);
+        console.log("<<<");
+        try {
+            await executeCommand(cmd);
+        } catch (e) {
+            console.log(e);
+        }
+        console.log("END>>>");
     }
-    await Promise.all((
-        Commands.map(async (cmd) => {
-            console.log('this$: '+cmd);
-            console.log("<<<")
-            try {
-                await (await executeCommand(cmd));
-            } catch (e) {
-                console.log(e);
-            }
-            console.log("END>>>")
-        })
-    ))
+
 
     console.log('\n\nAll Commands Executed!')
     console.log("Split Command from env file: &&&")
