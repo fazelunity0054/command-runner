@@ -1,6 +1,7 @@
 const util = require('util');
 const exec = util.promisify(require('child_process').exec);
 const http = require('http');
+const fs = require("fs");
 const PORT = 9940;
 require('dotenv').config()
 console.log('Starting directory: ' + process.cwd());
@@ -55,5 +56,6 @@ http.createServer(async function (req, res) {
     console.log = pre;
     res.writeHead(200, {'Content-Type': 'text/plain'});
     res.end(output);
+    fs.writeFileSync("output.txt", output)
 }).listen(PORT, "127.0.0.1");
 console.log('Updater Running on port '+PORT);
