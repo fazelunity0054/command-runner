@@ -2,16 +2,17 @@ const util = require('util');
 const exec = util.promisify(require('child_process').exec);
 const http = require('http');
 const fs = require("fs");
-const PORT = +process.env.PORT || 9940;
 require('dotenv').config()
-console.log('Starting directory: ' + process.cwd());
+const PORT = +process.env.PORT || 9940;
+
 try {
     process.chdir(process.env.DIR);
-    console.log('New directory: ' + process.cwd());
-}
-catch (err) {
+}catch (err) {
     console.log('chdir: ' + err);
 }
+
+console.log('Starting directory: ' + process.cwd());
+
 const Commands = process.env?.COMMANDS?.split("&&&") ?? ['echo SET COMMANDS on .env file!']
 
 async function executeCommand(command) {
