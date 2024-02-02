@@ -2,7 +2,7 @@ const util = require('util');
 const exec = util.promisify(require('child_process').exec);
 const http = require('http');
 const fs = require("fs");
-const PORT = 9940;
+const PORT = +process.env.PORT || 9940;
 require('dotenv').config()
 console.log('Starting directory: ' + process.cwd());
 try {
