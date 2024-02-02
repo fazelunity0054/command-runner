@@ -33,6 +33,7 @@ async function executeCommand(command) {
 
 
 http.createServer(async function (req, res) {
+    console.log("INCOMING CONNECTION");
     let output = "";
     const pre = console.log;
     console.log = (...str) => {
